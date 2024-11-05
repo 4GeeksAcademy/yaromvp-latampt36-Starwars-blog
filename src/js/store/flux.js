@@ -12,7 +12,11 @@ const getState = ({ getStore, getActions, setStore }) => {
 					background: "white",
 					initial: "white"
 				}
-			]
+			],
+			characters: [{}],
+			planets: [{}],
+			vehicles: [{}],
+			imagesURL: 'https://starwars-visualguide.com/assets/img/',
 		},
 		actions: {
 			// Use getActions to call a function within a fuction
@@ -37,7 +41,45 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 				//reset the global store
 				setStore({ demo: demo });
-			}
+			},
+			getInfo: async () => {
+				try {//Get People
+					const response = await fetch('https://www.swapi.tech/api/people')
+					if (response.status != 200) {
+						throw new Error('Error en la solicitud...')
+					}
+					const peolpeData = await response.json()
+					setStore({
+						characters: peolpeData
+					})
+				} catch (error) {
+					console.log(error)
+				}
+				try {//Get Planets
+					const response = await fetch('https://www.swapi.tech/api/planets')
+					if (response.status != 200) {
+						throw new Error('Error en la solicitud...')
+					}
+					const planetsData = await response.json()
+					setStore({
+						planets: planetsData
+					})
+				} catch (error) {
+					console.log(error)
+				}
+				try {//Get Vehicles
+					const response = await fetch('https://www.swapi.tech/api/vehicles')
+					if (response.status != 200) {
+						throw new Error('Error en la solicitud...')
+					}
+					const vehicleData = await response.json()
+					setStore({
+						vehicles: vehicleData
+					})
+				} catch (error) {
+					console.log(error)
+				}
+			},
 		}
 	};
 };

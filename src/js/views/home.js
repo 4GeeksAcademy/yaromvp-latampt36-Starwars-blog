@@ -1,15 +1,42 @@
-import React from "react";
-import rigoImage from "../../img/rigo-baby.jpg";
-import "../../styles/home.css";
+import React, { useEffect, useContext } from "react";
+import { Card } from "../component/Card.jsx";
+import { Context } from "../store/appContext.js";
 
-export const Home = () => (
-	<div className="text-center mt-5">
-		<h1>Hello Rigo!</h1>
-		<p>
-			<img src={rigoImage} />
-		</p>
-		<a href="#" className="btn btn-success">
-			If you see this green button, bootstrap is working
-		</a>
-	</div>
-);
+export const Home = () => {
+	const { store, actions } = useContext(Context);
+
+	useEffect(() => {
+		actions.getInfo()
+	}, [])
+
+	return (
+		<div className="bg-dark py-3">
+			<div className="container col-12">
+				<h1 className="text-warning">Characters</h1>
+				<div className="border border-success card-scroll row flex-nowrap gap-2 mb-4 overflow-x-auto">
+					{store.characters.results?.map((item) => {
+						return (
+							<Card index={item.uid} name={item.name} category='characters' />
+						)
+					})}
+				</div>
+				<h1 className="text-warning">Planets</h1>
+				<div className="border border-success card-scroll row flex-nowrap gap-2 mb-4 overflow-x-auto">
+					{store.planets.results?.map((item) => {
+						return (
+							<Card index={item.uid} name={item.name} category='planets' />
+						)
+					})}
+				</div>
+				<h1 className="text-warning">Vehicles</h1>
+				<div className="border border-success card-scroll row flex-nowrap gap-2 mb-4 overflow-x-auto">
+					{store.vehicles.results?.map((item) => {
+						return (
+							<Card index={item.uid} name={item.name} category='vehicles' />
+						)
+					})}
+				</div>
+			</div>
+		</div >
+	)
+};
