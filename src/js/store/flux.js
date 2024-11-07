@@ -1,47 +1,15 @@
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
-			demo: [
-				{
-					title: "FIRST",
-					background: "white",
-					initial: "white"
-				},
-				{
-					title: "SECOND",
-					background: "white",
-					initial: "white"
-				}
-			],
 			characters: [{}],
 			planets: [{}],
 			vehicles: [{}],
+			detailInfo: {},
 			imagesURL: 'https://starwars-visualguide.com/assets/img/',
+			favorites: [],
 		},
 		actions: {
 			// Use getActions to call a function within a fuction
-			exampleFunction: () => {
-				getActions().changeColor(0, "green");
-			},
-			loadSomeData: () => {
-				/**
-					fetch().then().then(data => setStore({ "foo": data.bar }))
-				*/
-			},
-			changeColor: (index, color) => {
-				//get the store
-				const store = getStore();
-
-				//we have to loop the entire demo array to look for the respective index
-				//and change its color
-				const demo = store.demo.map((elm, i) => {
-					if (i === index) elm.background = color;
-					return elm;
-				});
-
-				//reset the global store
-				setStore({ demo: demo });
-			},
 			getInfo: async () => {
 				try {//Get People
 					const response = await fetch('https://www.swapi.tech/api/people')
@@ -79,6 +47,26 @@ const getState = ({ getStore, getActions, setStore }) => {
 				} catch (error) {
 					console.log(error)
 				}
+			},
+			getDetail: async (id, category) => {
+				try {//Get the details of a character, planet or vehicle
+					const response = await fetch(`https://www.swapi.tech/api/${category}/${id}`)
+					if (response.status != 200) {
+						throw new Error('Error en la solicitud...')
+					}
+					const detailData = await response.json()
+					setStore({
+						detailInfo: detailData
+					})
+				} catch (error) {
+					console.log(error)
+				}
+			},
+			addFav: (id, category) => {
+				setStore(prevStore => ({
+					...prevStore,
+					favorites: [...prevStore.favorites, { id: id, category: category }]
+				}))
 			},
 		}
 	};
