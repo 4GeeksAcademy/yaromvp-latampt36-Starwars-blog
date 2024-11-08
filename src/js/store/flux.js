@@ -7,6 +7,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			detailInfo: {},
 			imagesURL: 'https://starwars-visualguide.com/assets/img/',
 			favorites: [],
+			firstLoad: true
 		},
 		actions: {
 			// Use getActions to call a function within a fuction
@@ -17,9 +18,16 @@ const getState = ({ getStore, getActions, setStore }) => {
 						throw new Error('Error en la solicitud...')
 					}
 					const peolpeData = await response.json()
+					const updatedResults = peolpeData.results.map(character => ({
+						...character,
+						isFav: false
+					}));
 					setStore({
-						characters: peolpeData
-					})
+						characters: {
+							...peolpeData,
+							results: updatedResults
+						}
+					});
 				} catch (error) {
 					console.log(error)
 				}
@@ -29,9 +37,16 @@ const getState = ({ getStore, getActions, setStore }) => {
 						throw new Error('Error en la solicitud...')
 					}
 					const planetsData = await response.json()
+					const updatedResults = planetsData.results.map(character => ({
+						...character,
+						isFav: false
+					}));
 					setStore({
-						planets: planetsData
-					})
+						planets: {
+							...planetsData,
+							results: updatedResults
+						}
+					});
 				} catch (error) {
 					console.log(error)
 				}
@@ -40,10 +55,17 @@ const getState = ({ getStore, getActions, setStore }) => {
 					if (response.status != 200) {
 						throw new Error('Error en la solicitud...')
 					}
-					const vehicleData = await response.json()
+					const vehiclesData = await response.json()
+					const updatedResults = vehiclesData.results.map(character => ({
+						...character,
+						isFav: false
+					}));
 					setStore({
-						vehicles: vehicleData
-					})
+						vehicles: {
+							...vehiclesData,
+							results: updatedResults
+						}
+					});
 				} catch (error) {
 					console.log(error)
 				}
@@ -62,12 +84,115 @@ const getState = ({ getStore, getActions, setStore }) => {
 					console.log(error)
 				}
 			},
-			addFav: (id, category) => {
-				setStore(prevStore => ({
-					...prevStore,
-					favorites: [...prevStore.favorites, { id: id, category: category }]
-				}))
+			addFav: (id, category, name) => {
+				const store = getStore();
+				const updatedFavs = [...store.favorites, { id, category, name }];
+
+				if (category === 'characters') {
+					const updatedResults = store.characters.results.map(character => ({
+						...character,
+						isFav: character.uid === id || character.isFav
+					}));
+					setStore({
+						favorites: updatedFavs,
+						characters: {
+							...store.characters,
+							results: updatedResults
+						}
+					});
+				}
+				if (category === 'planets') {
+					const updatedResults = store.planets.results.map(planet => ({
+						...planet,
+						isFav: planet.uid === id || planet.isFav
+					}));
+					setStore({
+						favorites: updatedFavs,
+						planets: {
+							...store.planets,
+							results: updatedResults
+						}
+					});
+				}
+				if (category === 'vehicles') {
+					const updatedResults = store.vehicles.results.map(vehicle => ({
+						...vehicle,
+						isFav: vehicle.uid === id || vehicle.isFav
+					}));
+					setStore({
+						favorites: updatedFavs,
+						vehicles: {
+							...store.vehicles,
+							results: updatedResults
+						}
+					});
+				}
 			},
+			deleteFav: (id, category) => {
+				const store = getStore();
+				const updatedFavs = store.favorites.filter(
+					fav => !(fav.id === id && fav.category === category)
+				);
+				if (category === 'characters') {
+					const updatedResults = store.characters.results.map(character => {
+						if (character.uid === id) {
+							return {
+								...character,
+								isFav: false
+							};
+						}
+						return character;
+					});
+					setStore({
+						favorites: updatedFavs,
+						characters: {
+							...store.characters,
+							results: updatedResults
+						}
+					});
+				}
+				if (category === 'planets') {
+					const updatedResults = store.planets.results.map(planet => {
+						if (planet.uid === id) {
+							return {
+								...planet,
+								isFav: false
+							};
+						}
+						return planet;
+					});
+					setStore({
+						favorites: updatedFavs,
+						planets: {
+							...store.planets,
+							results: updatedResults
+						}
+					});
+				}
+				if (category === 'vehicles') {
+					const updatedResults = store.vehicles.results.map(vehicle => {
+						if (vehicle.uid === id) {
+							return {
+								...vehicle,
+								isFav: false
+							};
+						}
+						return vehicle;
+					});
+					setStore({
+						favorites: updatedFavs,
+						vehicles: {
+							...store.vehicles,
+							results: updatedResults
+						}
+					});
+				}
+			},
+			changeFirstLoad: () => {
+				setStore({
+					firstLoad: false
+				})
+			}
 		}
 	};
 };

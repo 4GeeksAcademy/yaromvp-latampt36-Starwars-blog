@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useContext } from "react";
 import { Context } from "../store/appContext.js";
 import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -6,23 +6,19 @@ import { faHeart } from '@fortawesome/free-solid-svg-icons'
 
 export const Card = (props) => {
     const { store, actions } = useContext(Context);
-    const [isFav, setIsFav] = useState(false);
     const navigate = useNavigate()
     const imgURL = store.imagesURL + props.category + '/' + props.index + '.jpg'
 
-    const clickLearnMore = () => {
+    const clickLearnMore = async () => {
         if (props.category == 'characters') {
             actions.getDetail(props.index, 'people')
         } else {
             actions.getDetail(props.index, props.category)
         }
-        //navigate(`/${props.category}/${props.index}`)
     }
 
-    const clickFav = async () => {
-        setIsFav(!isFav);
-        isFav ? actions.addFav(props.index, props.category) : null //actions.deleteFav()
-        console.log(store.favorites.lenght)
+    const clickFav = () => {
+        props.isFav ? actions.deleteFav(props.index, props.category) : actions.addFav(props.index, props.category, props.name)
     }
 
     return (
@@ -38,7 +34,7 @@ export const Card = (props) => {
                     <Link to={`/${props.category}/${props.index}`}>
                         <button type="button" className="btn btn-outline-primary" onClick={clickLearnMore}>Learn more!</button>
                     </Link>
-                    <button type="button" className={`btn btn-outline-warning ${isFav == true ? "text-danger" : ""}`} onClick={clickFav}>
+                    <button type="button" className={`btn btn-outline-warning ${props.isFav == true ? "text-danger" : ""}`} onClick={clickFav}>
                         <FontAwesomeIcon icon={faHeart} />
                     </button>
                 </div>

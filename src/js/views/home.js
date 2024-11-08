@@ -6,7 +6,10 @@ export const Home = () => {
 	const { store, actions } = useContext(Context);
 
 	useEffect(() => {
-		actions.getInfo()
+		if (store.firstLoad == true) {
+			actions.getInfo()
+			actions.changeFirstLoad()
+		}
 	}, [])
 
 	return (
@@ -17,7 +20,7 @@ export const Home = () => {
 				<div className="row flex-nowrap gap-2 mb-4 overflow-x-auto">
 					{store.characters.results?.map((item) => {
 						return (
-							<Card index={item.uid} name={item.name} category='characters' />
+							<Card index={item.uid} name={item.name} isFav={item.isFav} category='characters' />
 						)
 					})}
 				</div>
@@ -26,7 +29,7 @@ export const Home = () => {
 				<div className="row flex-nowrap gap-2 mb-4 overflow-x-auto">
 					{store.planets.results?.map((item) => {
 						return (
-							<Card index={item.uid} name={item.name} category='planets' />
+							<Card index={item.uid} name={item.name} isFav={item.isFav} category='planets' />
 						)
 					})}
 				</div>
@@ -35,7 +38,7 @@ export const Home = () => {
 				<div className="row flex-nowrap gap-2 mb-4 overflow-x-auto">
 					{store.vehicles.results?.map((item) => {
 						return (
-							<Card index={item.uid} name={item.name} category='vehicles' />
+							<Card index={item.uid} name={item.name} isFav={item.isFav} category='vehicles' />
 						)
 					})}
 				</div>

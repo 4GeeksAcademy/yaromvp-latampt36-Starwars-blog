@@ -1,12 +1,13 @@
-import React, { useState, useContext } from "react";
+import React, { useContext } from "react";
 import { Context } from "../store/appContext.js";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import starwars from "../../img/starwars-logo.png";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrashCan } from '@fortawesome/free-solid-svg-icons'
 
 export const Navbar = () => {
 	const { store, actions } = useContext(Context);
+	const navigate = useNavigate()
 
 	return (
 		<nav className="navbar navbar-dark bg-black px-2">
@@ -19,20 +20,26 @@ export const Navbar = () => {
 						type="button" data-bs-toggle="dropdown" aria-expanded="false">
 						Favorites <span className="badge bg-secondary">{store.favorites.length}</span>
 					</button>
-					<ul className="dropdown-menu dropdown-menu-end bg-secondary">
-						<li><button className="dropdown-item text-center bg-secondary text-light" type="button">(empty)</button></li>
+					<ul className="dropdown-menu dropdown-menu-dark dropdown-menu-end">
 						{store.favorites.map((item) => {
-							<li>
-								<button className="dropdown-item text-center bg-dark text-light" type="button">
-									{item.category == 'characters'
-										? <li><button className="dropdown-item text-center bg-dark text-light" type="button">{store.characters.results?.name} <FontAwesomeIcon icon={faTrashCan} /></button></li>
-										: item.category == 'planets'
-											? <li><button className="dropdown-item text-center bg-dark text-light" type="button">(empty)</button></li>
-											: item.category == 'vehicles'
-												? <li><button className="dropdown-item text-center bg-dark text-light" type="button">(empty)</button></li>
-												: null}
-								</button>
-							</li>
+							return (
+								<li className="d-flex justify-content-between ">
+									<button className="btn dropdown-item text-light text-start px-2 py-1" type="button" onClick={() => {
+										const found = store.favorites.find((fav) => fav.name == item.name);
+										if (found.category == 'characters') {
+											actions.getDetail(found.id, 'people')
+										} else {
+											actions.getDetail(found.id, found.category)
+										}
+										navigate(`/${found.category}/${found.id}`)
+									}}>{item.name} </button>
+									<button className="btn text-light d-flex align-items-center icon-link icon-link-hover" type="button" onClick={() => {
+										const found = store.favorites.find((fav) => fav.name == item.name);
+										actions.deleteFav(found.id, found.category)
+									}}>
+										<FontAwesomeIcon icon={faTrashCan} />
+									</button>
+								</li>)
 						})}
 					</ul>
 				</div>
